@@ -10,7 +10,16 @@ import com.soldier.redis.BasePrefix;
  * @Description:对于订单的redis-key
  */
 public class OrderKey extends BasePrefix {
-    private OrderKey(int expireSeconds, String prefix) {
-        super(expireSeconds, prefix);
+
+    // 不让外部篡改
+    private OrderKey(String prefix) {
+        super(prefix);
     }
+
+    // 创建一个UserKey：过期时间为0， 前缀为className+prefix=OrderKey:id
+    public static OrderKey getById = new OrderKey("id");
+
+    // 创建一个UserKey：过期时间为0， 前缀为className+prefix=OrderKey:name
+    public static OrderKey getByName = new OrderKey("name");
+
 }

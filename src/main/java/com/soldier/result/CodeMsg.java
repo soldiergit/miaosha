@@ -5,17 +5,21 @@ package com.soldier.result;
  * @Date 20-4-16 下午6:15
  * @Email:583406411@qq.com
  * @Version 1.0
- * @Description:
+ * @Description:返回客户端的信息码
  */
 public class CodeMsg {
 
+    // 返回码
     private int code;
+    // 返回信息
     private String msg;
 
-    //通用的错误码
+    // 成功
     public static CodeMsg SUCCESS = new CodeMsg(0, "success");
     public static CodeMsg SERVER_ERROR = new CodeMsg(500100, "服务端异常");
+    // 参数绑定时异常
     public static CodeMsg BIND_ERROR = new CodeMsg(500101, "参数校验异常：%s");
+    // 请求异常
     public static CodeMsg REQUEST_ILLEGAL = new CodeMsg(500102, "请求非法");
     public static CodeMsg ACCESS_LIMIT_REACHED = new CodeMsg(500104, "访问太频繁！");
     //登录模块 5002XX
@@ -25,7 +29,6 @@ public class CodeMsg {
     public static CodeMsg MOBILE_ERROR = new CodeMsg(500213, "手机号格式错误");
     public static CodeMsg MOBILE_NOT_EXIST = new CodeMsg(500214, "手机号不存在");
     public static CodeMsg PASSWORD_ERROR = new CodeMsg(500215, "密码错误");
-
 
     //商品模块 5003XX
 
@@ -47,6 +50,21 @@ public class CodeMsg {
         this.msg = msg;
     }
 
+    /**
+     * 返回一个自定义错误信息的CodeMsg
+     */
+    public CodeMsg fillArgs(Object... args) {
+        int code = this.code;
+        /**
+         * 新字符串使用本地语言环境，制定字符串格式和参数生成格式化的新字串
+         *     String str=String.format("Hi,%s", "小超");
+         *     System.out.println(str);==Hi,小超
+         */
+        String message = String.format(this.msg, args);
+        return new CodeMsg(code, message);
+    }
+
+
     public int getCode() {
         return code;
     }
@@ -61,12 +79,6 @@ public class CodeMsg {
 
     public void setMsg(String msg) {
         this.msg = msg;
-    }
-
-    public CodeMsg fillArgs(Object... args) {
-        int code = this.code;
-        String message = String.format(this.msg, args);
-        return new CodeMsg(code, message);
     }
 
     @Override

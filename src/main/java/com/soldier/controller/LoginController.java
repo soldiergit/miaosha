@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 /**
@@ -37,20 +38,18 @@ public class LoginController {
     }
 
     /**
-     * 使用@Valid校验vo对象
+     *  @Valid表单验证
      */
     @RequestMapping("/do_login")
     @ResponseBody
-    public Result<String> doLogin(@Valid LoginVo loginVo){
+//    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo){
+    public Result<Boolean> doLogin(@Valid LoginVo loginVo){
         logger.info(loginVo.toString());
-        String mobile = loginVo.getMobile();
-        String password = loginVo.getPassword();
-        if (StringUtils.isEmpty(mobile)) {
-            return Result.error(CodeMsg.MOBILE_EMPTY);
-        } else if (!ValidatorUtil.isMobile(mobile)) {
-            return Result.error(CodeMsg.MOBILE_ERROR);
-        }
+
+        //登录,没有抛出异常就证明没事
+//        miaoshaUserService.login(response, loginVo);
         miaoshaUserService.login(loginVo);
-        return null;
+
+        return Result.success(true);
     }
 }

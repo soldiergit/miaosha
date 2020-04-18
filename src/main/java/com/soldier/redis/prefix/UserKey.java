@@ -21,4 +21,5 @@ public class UserKey extends BasePrefix {
 
     // 创建一个UserKey：过期时间为0， 前缀为className+prefix=UserKey:name
     public static UserKey getByName = new UserKey("name");
+
 }

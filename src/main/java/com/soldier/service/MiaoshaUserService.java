@@ -2,6 +2,8 @@ package com.soldier.service;
 
 import com.soldier.dao.MiaoshaUserDao;
 import com.soldier.domain.MiaoshaUser;
+import com.soldier.exception.GlobalException;
+import com.soldier.redis.prefix.MiaoshaUserKey;
 import com.soldier.result.CodeMsg;
 import com.soldier.util.MD5Util;
 import com.soldier.vo.LoginVo;
@@ -42,17 +44,22 @@ public class MiaoshaUserService {
         if (StringUtils.isEmpty(token)) {
             return null;
         }
-        MiaoshaUser user = redisService.get(MiaoshaUserKey.token, token, MiaoshaUser.class);
+//        MiaoshaUser user = redisService.get(MiaoshaUserKey.token, token, MiaoshaUser.class);
+        MiaoshaUser user = new MiaoshaUser();
         //延长有效期
         if (user != null) {
-            addCookie(response, token, user);
+//            addCookie(response, token, user);
         }
         return user;
     }
 
-
-    public boolean login(HttpServletResponse response, LoginVo loginVo) {
+    /**
+     * 登录操作
+     */
+//    public boolean login(HttpServletResponse response, LoginVo loginVo) {
+    public boolean login(LoginVo loginVo) {
         if (loginVo == null) {
+            // 直接抛出我们定义的全局异常，去那边处理
             throw new GlobalException(CodeMsg.SERVER_ERROR);
         }
         String mobile = loginVo.getMobile();
@@ -71,17 +78,17 @@ public class MiaoshaUserService {
             throw new GlobalException(CodeMsg.PASSWORD_ERROR);
         }
         //生成cookie
-        String token = UUIDUtil.uuid();
-        addCookie(response, token, user);
+//        String token = UUIDUtil.uuid();
+//        addCookie(response, token, user);
         return true;
     }
 
-    private void addCookie(HttpServletResponse response, String token, MiaoshaUser user) {
-        redisService.set(MiaoshaUserKey.token, token, user);
-        Cookie cookie = new Cookie(COOKI_NAME_TOKEN, token);
-        cookie.setMaxAge(MiaoshaUserKey.token.expireSeconds());
-        cookie.setPath("/");
-        response.addCookie(cookie);
-    }
+//    private void addCookie(HttpServletResponse response, String token, MiaoshaUser user) {
+//        redisService.set(MiaoshaUserKey.token, token, user);
+//        Cookie cookie = new Cookie(COOKI_NAME_TOKEN, token);
+//        cookie.setMaxAge(MiaoshaUserKey.token.expireSeconds());
+//        cookie.setPath("/");
+//        response.addCookie(cookie);
+//    }
 
 }

@@ -20,7 +20,6 @@ public class ValidatorUtil {
         if (StringUtils.isEmpty(mobile)) return false;
         Matcher matcher = mobile_pattern.matcher(mobile);
         return matcher.matches();
-
     }
 
 }

@@ -1,5 +1,6 @@
 package com.soldier.vo;
 
+import com.soldier.validator.IsMobile;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
