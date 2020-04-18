@@ -1,0 +1,49 @@
+spring:
+  #thymeleaf
+  thymeleaf:
+    cache: false
+  #druid
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/miaosha?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    filters: stat
+    maxActive: 2
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+
+#mybatis
+mybatis:
+  #数据彪对应的实体类
+  type-aliases-package: com.soldier.domain
+  configuration:
+    #驼峰命名法
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+  #接口配置文件
+  mapper-locations: classpath:mapper/*.xml
+#redis
+redis:
+  host: 116.62.48.112
+  port: 6379
+  #超时时间
+  timeout: 3
+  password: 123456
+  #连接池最大连接个数
+  poolMaxTotal: 10
+  #连接池最大空闲
+  poolMaxIdle: 10
+  #连接池最大等待
+  poolMaxWait: 3
