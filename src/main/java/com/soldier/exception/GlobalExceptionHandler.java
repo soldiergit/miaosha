@@ -26,6 +26,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public Result<String> exceptionHandler(HttpServletRequest request, Exception e) {
+        // 打印异常信息
+        e.printStackTrace();
 
         if (e instanceof GlobalException) {
 

@@ -1,11 +1,8 @@
 package com.soldier.controller;
 
-import com.soldier.result.CodeMsg;
 import com.soldier.result.Result;
 import com.soldier.service.MiaoshaUserService;
-import com.soldier.util.ValidatorUtil;
 import com.soldier.vo.LoginVo;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,13 +39,11 @@ public class LoginController {
      */
     @RequestMapping("/do_login")
     @ResponseBody
-//    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo){
-    public Result<Boolean> doLogin(@Valid LoginVo loginVo){
+    public Result<Boolean> doLogin(HttpServletResponse response, @Valid LoginVo loginVo){
         logger.info(loginVo.toString());
 
         //登录,没有抛出异常就证明没事
-//        miaoshaUserService.login(response, loginVo);
-        miaoshaUserService.login(loginVo);
+        miaoshaUserService.login(response, loginVo);
 
         return Result.success(true);
     }

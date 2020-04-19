@@ -1,6 +1,7 @@
 package com.soldier.service;
 
 import com.alibaba.fastjson.JSON;
+import com.soldier.domain.MiaoshaUser;
 import com.soldier.redis.KeyPrefix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
