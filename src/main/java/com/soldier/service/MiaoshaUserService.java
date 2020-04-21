@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  * @Date 20-4-18 上午10:39
  * @Email:583406411@qq.com
  * @Version 1.0
- * @Description:
+ * @Description:秒杀用户service
  */
 @Service
 public class MiaoshaUserService {

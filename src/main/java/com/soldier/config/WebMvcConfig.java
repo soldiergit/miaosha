@@ -3,7 +3,9 @@ package com.soldier.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import java.util.List;
@@ -20,10 +22,11 @@ import java.util.List;
  *  Spring Boot2.0的版本WebMvcConfigurerAdapter已过时了
  *  新的实现是：
  *      1、implements WebMvcConfigurer
- *      2、extends WebMvcConfigurationSupport 推荐
+ *      2、extends WebMvcConfigurationSupport 推荐 但是要放行静态资源
  */
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurationSupport {
+//public class WebMvcConfig implements WebMvcConfigurer {
 
     // 注入秒杀用户参数解析器
     @Autowired
@@ -35,6 +38,15 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
      */
     @Override
     protected void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+//    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(miaoshaUserArgumentResolvers);
+    }
+
+    /**
+     * 放行静态资源
+     */
+    @Override
+    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
     }
 }

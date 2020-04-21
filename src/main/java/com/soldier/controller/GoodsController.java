@@ -2,16 +2,20 @@ package com.soldier.controller;
 
 import com.soldier.domain.MiaoshaUser;
 import com.soldier.domain.User;
+import com.soldier.service.GoodsService;
 import com.soldier.service.MiaoshaUserService;
+import com.soldier.vo.GoodsVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @Author soldier
@@ -26,6 +30,9 @@ public class GoodsController {
 
     @Autowired
     private MiaoshaUserService miaoshaUserService;
+
+    @Autowired
+    private GoodsService goodsService;
 
     // 废弃，我们从自定义的参数解析器中获取秒杀用户信息
 //    /**
@@ -62,14 +69,56 @@ public class GoodsController {
      * @param miaoshaUser   秒杀用户信息
      */
     @RequestMapping("/to_list")
-    public String list(Model model, MiaoshaUser miaoshaUser){
+    public String list(MiaoshaUser miaoshaUser, Model model){
 
         if (miaoshaUser == null) {
             return "login";
         }
 
+        List<GoodsVo> goodsVoList = goodsService.listGoodsVo();
+
         model.addAttribute("miaoshaUser", miaoshaUser);
+        model.addAttribute("goodsVoList", goodsVoList);
 
         return "goods_list";
+    }
+
+    @RequestMapping("/to_detail/{goodsId}")
+    public String detail(@PathVariable("goodsId") Long goodsId, MiaoshaUser miaoshaUser, Model model){
+
+        if (miaoshaUser == null) {
+            return "login";
+        }
+
+        GoodsVo goodsVo = goodsService.selectGoodsVoByGoodsId(goodsId);
+
+        // 秒杀开始时间
+        long startTime = goodsVo.getStartDate().getTime();
+        // 秒杀结束时间时间
+        long endTime = goodsVo.getEndDate().getTime();
+        // 系统当前
+        long now = System.currentTimeMillis();
+        // 秒杀状态 0-倒计时 1-进行中 2-已结束
+        int miaoshaStatus = 0;
+        // 距离活动开始剩余时间
+        int remainSeconds = 0;
+
+        if (now < startTime) {//秒杀未开始，倒计时
+            miaoshaStatus = 0;
+            remainSeconds = (int) ((startTime - now)/1000);
+        } else if (now > endTime) {//秒杀已结束
+            miaoshaStatus = 2;
+            remainSeconds = -1;
+        } else {//秒杀进行中
+            miaoshaStatus = 1;
+            remainSeconds = 0;
+        }
+
+        model.addAttribute("miaoshaUser", miaoshaUser);
+        model.addAttribute("goodsVo", goodsVo);
+        model.addAttribute("miaoshaStatus", miaoshaStatus);
+        model.addAttribute("remainSeconds", remainSeconds);
+
+        return "goods_detail";
     }
 }

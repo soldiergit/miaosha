@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @Date 20-4-16 上午10:07
  * @Email:583406411@qq.com
  * @Version 1.0
- * @Description:
+ * @Description:用户service
  */
 @Service
 public class UserService {

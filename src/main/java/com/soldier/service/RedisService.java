@@ -13,7 +13,7 @@ import redis.clients.jedis.JedisPool;
  * @Date 20-4-16 下午6:19
  * @Email:583406411@qq.com
  * @Version 1.0
- * @Description:
+ * @Description:redis操作service
  */
 @Service
 public class RedisService {

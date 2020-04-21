@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soldier.dao.OrderDao">
+
+    <select id="selectMiaoshaOrderByMiaoshaUserIdAndGoodsId" resultType="com.soldier.domain.MiaoshaOrder">
+        select * from miaosha_order
+        where user_id = #{userId} and goods_id = #{goodsId}
+    </select>
+
+    <insert id="insert" parameterType="com.soldier.domain.OrderInfo">
+        <!--
+        自增主键的获取方法
+        selectKey  会将 SELECT LAST_INSERT_ID()的结果放入到传入的model的主键里面，
+            keyColumn 对应的数据表的主键的属性名，如果model中的id跟数据库的主键对应了，可省略
+            keyProperty 对应的model中的主键的属性名，这里是 user 中的id，因为它跟数据库的主键对应
+            order   AFTER 表示 SELECT LAST_INSERT_ID() 在insert执行之后执行,多用与自增主键
+                    BEFORE 表示 SELECT LAST_INSERT_ID() 在insert执行之前执行，这样的话就拿不到主键了
+                    这种适合那种主键不是自增的类型
+            resultType 主键类型
+        java类中的写法看OrderDao.class
+       -->
+        <selectKey keyColumn="id" keyProperty="id" order="AFTER" resultType="long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into order_info(user_id, goods_id, goods_name, goods_count, goods_price, order_channel, status, create_date)
+        values(#{userId}, #{goodsId}, #{goodsName}, #{goodsCount}, #{goodsPrice}, #{orderChannel},#{status},#{createDate} )
+    </insert>
+
+    <insert id="insertMiaoshaOrder" parameterType="com.soldier.domain.MiaoshaOrder">
+        insert into miaosha_order (user_id, goods_id, order_id)
+        values(#{userId}, #{goodsId}, #{orderId})
+    </insert>
+</mapper>

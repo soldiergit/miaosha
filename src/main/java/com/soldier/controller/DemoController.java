@@ -5,7 +5,6 @@ import com.soldier.redis.prefix.UserKey;
 import com.soldier.result.Result;
 import com.soldier.service.RedisService;
 import com.soldier.service.UserService;
-import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
