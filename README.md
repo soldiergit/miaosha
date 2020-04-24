@@ -7,7 +7,7 @@ Java秒杀系统方案优化-高性能高并发实战
 
 ## redis的安装与配置
 #### redis的安装
->1. 到https://redis.io/下载redis压缩包
+>1. 到![redis官网](https://redis.io/ "redis官网")下载redis压缩包
 >2. tar -zxvf redis-5.0.8.tar.gz
 >3. mv redis-5.0.8 /usr/local/redis
 >4. cd /usr/local/redis
@@ -53,14 +53,43 @@ Java秒杀系统方案优化-高性能高并发实战
 >1. 其实与页面缓存和页面缓存差不多
 >2. 对象缓存不会设置失效时间
 >3. 但是对象更新时，要更新缓存
->4. 详情查看：![点击前往][https://blog.csdn.net/tTU1EvLDeLFq5btqiK/article/details/78693323]
+>4. 详情查看：![点击前往](https://blog.csdn.net/tTU1EvLDeLFq5btqiK/article/details/78693323]
 ### 页面静态化，前后端分离
 `
 如：AngularJS、Vue.js，利用浏览器缓存
 `
-###　静态资源优化
 >1. css/js压缩，减少流量
->2. 可学习Tengine，![点击前往][https://tengine.taobao.org]
->3. webpack:专门为打包用的，![点击前往][https://webpack.js.org/guides/getting-started/]
+>2. 可学习Tengine，![点击前往](https://tengine.taobao.org "Tengine")
+>3. webpack:专门为打包用的，![点击前往](https://webpack.js.org/guides/getting-started/ "webpack")
 ### CDN优化
->- CDN就近访问，![点击前往][https://baike.baidu.com/item/CDN/420951?fr=aladdin]
+>- CDN就近访问，![点击前往](https://baike.baidu.com/item/CDN/420951?fr=aladdin "CDN百度百科")
+
+## RabbitMQ的安装与配置
+#### RabbitMQ的安装
+>1. 下载![Erlang](https://www.rabbitmq.com/releases/erlang/ "Erlang下载地址")
+>2. 下载![RabbitMQ](https://www.rabbitmq.com/releases/rabbitmq-server/ "RabbitMQ下载地址")
+>3. 根据系统版本下载![socat](http://repo.iotti.biz/CentOS/ "rabbitmq安装依赖于socat")
+`
+查看系统版本信息：lsb_release -a
+`
+>4. 分别安装Erlang、Socat、RabbitMQ（一定按照顺序！）
+`
+wget https://www.rabbitmq.com/releases/erlang/erlang-19.0.4-1.el7.centos.x86_64.rpm
+wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.15/rabbitmq-server-3.6.15-1.el6.noarch.rpm
+wget http://repo.iotti.biz/CentOS/7/x86_64/socat-1.7.3.2-5.el7.lux.x86_64.rpm
+rpm -ivh erlang-19.0.4-1.el7.centos.x86_64.rpm
+rpm -ivh socat-1.7.3.2-5.el7.lux.x86_64.rpm
+rpm -ivh rabbitmq-server-3.6.15-1.el6.noarch.rpm
+`
+>5. 配置rabbitmq：vi /usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/ebin/rabbit.app
+`
+将 {loopback_users, [<<"guest">>]} 改为 {loopback_users, []}
+`
+>6. 安装管理插件：rabbitmq-plugins enable rabbitmq_management
+>7. 启动RabbitMQ，然后访问http://116.62.48.112:15672/#/，默认用户名密码：guest
+`
+cd /usr/lib/rabbitmq/bin
+./rabbitmq-server start
+
+`
+![Spring Boot + RabbitMQ 配置参数解释](https://www.cnblogs.com/qts-hope/p/11242559.html "Spring Boot + RabbitMQ 配置参数解释")

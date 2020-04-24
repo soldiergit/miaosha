@@ -25,6 +25,37 @@ spring:
     testOnReturn: false
     poolPreparedStatements: true
     maxOpenPreparedStatements: 20
+  #rabbitmq
+  rabbitmq:
+    host: 116.62.48.112
+    port: 5672
+    username: guest
+    password: guest
+    #连接到rabbitMQ的vhost
+    virtual-host: /
+    listener:
+      simple:
+        #消费者数量
+        concurrency: 10
+        max-concurrency: 10
+        #指定一个请求能处理多少个消息，如果有事务的话，必须大于等于transaction数量.
+        prefetch: 1
+        #是否启动时自动启动容器
+        auto-startup: true
+        #决定被拒绝的消息是否重新入队；默认是true（与参数acknowledge-mode有关系）
+        default-requeue-rejected: true
+    template:
+      retry:
+        #发送重试是否可用
+        enabled: true
+        #第一次和第二次尝试发布或传递消息之间的间隔
+        initial-interval: 1000
+        #最大重试次数
+        max-attempts: 3
+        #最大重试时间间隔
+        max-interval: 10000
+        #应用于上一重试间隔的乘数
+        multiplier: 1.0
 
 #mybatis
 mybatis:

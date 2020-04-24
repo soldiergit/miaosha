@@ -1,6 +1,7 @@
 package com.soldier.controller;
 
 import com.soldier.domain.User;
+import com.soldier.rabbitmq.MQSender;
 import com.soldier.redis.prefix.UserKey;
 import com.soldier.result.Result;
 import com.soldier.service.RedisService;
@@ -29,6 +30,9 @@ public class DemoController {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private MQSender mqSender;
 
     @RequestMapping("/hello")
     public String hello(Model model) {
@@ -62,5 +66,45 @@ public class DemoController {
         User user = new User(3, "kugua");
         boolean set = redisService.set(UserKey.getById, "" + 1, user);
         return Result.success(set);
+    }
+
+    /**
+     * Direct模式
+     */
+    @RequestMapping("/rabbitmq")
+    @ResponseBody
+    public Result<String> mqDirectSend() {
+        mqSender.sendDirect("hello, world!");
+        return Result.success("hello, world!");
+    }
+
+    /**
+     * Topic模式
+     */
+    @RequestMapping("/rabbitmq/topic")
+    @ResponseBody
+    public Result<String> mqTopicSend() {
+        mqSender.sendTopic("hello topic queue");
+        return Result.success("hello topic queue");
+    }
+
+    /**
+     * Fanout模式
+     */
+    @RequestMapping("/rabbitmq/fanout")
+    @ResponseBody
+    public Result<String> mqFanoutSend() {
+        mqSender.sendFanout("hello fanout queue");
+        return Result.success("hello fanout queue");
+    }
+
+    /**
+     * Headers模式
+     */
+    @RequestMapping("/rabbitmq/headers")
+    @ResponseBody
+    public Result<String> mqHeadersSend() {
+        mqSender.sendHeaders("hello headers queue");
+        return Result.success("hello headers queue");
     }
 }
