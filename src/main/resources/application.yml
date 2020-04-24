@@ -7,16 +7,16 @@ spring:
     cache: false
   #druid
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/miaosha?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
-    username: root
+    url: jdbc:mysql://116.62.48.112:3306/miaosha?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false
+    username: admin
     password: 123456
     driver-class-name: com.mysql.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     filters: stat
-    maxActive: 2
-    initialSize: 1
+    maxActive: 1000
+    initialSize: 100
     maxWait: 60000
-    minIdle: 1
+    minIdle: 500
     timeBetweenEvictionRunsMillis: 60000
     minEvictableIdleTimeMillis: 300000
     validationQuery: select 'x'
@@ -42,11 +42,11 @@ redis:
   host: 116.62.48.112
   port: 6379
   #超时时间
-  timeout: 3
+  timeout: 10
   password: 123456
   #连接池最大连接个数
-  poolMaxTotal: 10
+  poolMaxTotal: 1000
   #连接池最大空闲
-  poolMaxIdle: 10
+  poolMaxIdle: 500
   #连接池最大等待
-  poolMaxWait: 3
+  poolMaxWait: 500

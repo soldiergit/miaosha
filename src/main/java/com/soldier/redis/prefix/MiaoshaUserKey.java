@@ -21,4 +21,7 @@ public class MiaoshaUserKey extends BasePrefix {
 
     // 创建一个UserKey：过期时间为0， 前缀为className+prefix=MiaoshaUserKey:token
     public static MiaoshaUserKey token = new MiaoshaUserKey(TOKEN_EXPIRE_SECONDS, "tk");
+
+    // 创建一个UserKey：过期时间为0， 前缀为className+prefix=MiaoshaUserKey:id
+    public static MiaoshaUserKey getById = new MiaoshaUserKey(0, "id");
 }

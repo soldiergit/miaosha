@@ -41,3 +41,26 @@ Java秒杀系统方案优化-高性能高并发实战
 >3. 将该参数解析器添加到WebMvc配置中
 >4. 在controller上把用户类作为参数传入,webMvc会自动通过参数解析器来填充用户信息
 >5. 如果用户信息不为null，则允许用户继续访问页面；否则返回登录页面
+
+## 页面优化
+###　页面缓存＋URL缓存＋对象缓存
+#### 页面缓存
+>1. 注入thymeleaf视图解析器和上下文对象(ThymeleafViewResolver+ApplicationContext)
+>2. 从redis中取页面缓存,没有的话新建一个IWebContext对象，从ThymeleafViewResolver中取
+#### URL缓存
+>- 其实与页面缓存差不多，几乎一样
+#### URL缓存
+>1. 其实与页面缓存和页面缓存差不多
+>2. 对象缓存不会设置失效时间
+>3. 但是对象更新时，要更新缓存
+>4. 详情查看：![点击前往][https://blog.csdn.net/tTU1EvLDeLFq5btqiK/article/details/78693323]
+### 页面静态化，前后端分离
+`
+如：AngularJS、Vue.js，利用浏览器缓存
+`
+###　静态资源优化
+>1. css/js压缩，减少流量
+>2. 可学习Tengine，![点击前往][https://tengine.taobao.org]
+>3. webpack:专门为打包用的，![点击前往][https://webpack.js.org/guides/getting-started/]
+### CDN优化
+>- CDN就近访问，![点击前往][https://baike.baidu.com/item/CDN/420951?fr=aladdin]

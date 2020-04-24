@@ -33,11 +33,34 @@ public class MiaoshaUserService {
     @Autowired
     private RedisService redisService;
 
-    /**
+    /*弃用，使用对象缓存
      * 查询数据库
-     */
     public MiaoshaUser getById(long id) {
         return miaoshaUserDao.getById(id);
+    }
+     */
+
+    /**
+     * 实现对象缓存
+     */
+    public MiaoshaUser getById(long id) {
+
+        MiaoshaUser miaoshaUser = null;
+
+        // 取缓存
+        miaoshaUser = redisService.get(MiaoshaUserKey.getById, ""+id, MiaoshaUser.class);
+        if (miaoshaUser != null) {
+            return miaoshaUser;
+        }
+
+        // 取数据库
+        miaoshaUser = miaoshaUserDao.getById(id);
+        // 写入缓存
+        if (miaoshaUser != null) {
+            redisService.set(MiaoshaUserKey.getById, ""+id, miaoshaUser);
+        }
+
+        return miaoshaUser;
     }
 
     /**
@@ -84,6 +107,28 @@ public class MiaoshaUserService {
             addCookie(response, token, user);
         }
         return user;
+    }
+
+    /**
+     * https://blog.csdn.net/tTU1EvLDeLFq5btqiK/article/details/78693323
+     */
+    public boolean updatePassword(String token, long id, String formPass) {
+        //取user
+        MiaoshaUser user = getById(id);
+        if(user == null) {
+            throw new GlobalException(CodeMsg.MOBILE_NOT_EXIST);
+        }
+        //更新数据库
+        MiaoshaUser toBeUpdate = new MiaoshaUser();
+        toBeUpdate.setId(id);
+        toBeUpdate.setPassword(MD5Util.formPassToDBPass(formPass, user.getSalt()));
+        miaoshaUserDao.updatePassword(toBeUpdate);
+        //处理缓存
+        redisService.delete(MiaoshaUserKey.getById, ""+id);
+        user.setPassword(toBeUpdate.getPassword());
+        redisService.set(MiaoshaUserKey.token, token, user);
+
+        return true;
     }
 
     /**

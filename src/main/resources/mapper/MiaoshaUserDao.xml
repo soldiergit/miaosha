@@ -5,4 +5,9 @@
     <select id="getById" parameterType="long" resultType="com.soldier.domain.MiaoshaUser">
         select * from miaosha_user where id = #{id}
     </select>
+
+    <update id="updatePassword" parameterType="com.soldier.domain.MiaoshaUser">
+        update miaosha_user set password = #{password}
+        where id = #{id}
+    </update>
 </mapper>
