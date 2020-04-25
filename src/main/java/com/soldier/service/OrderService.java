@@ -58,4 +58,11 @@ public class OrderService {
 
         return orderInfo;
     }
+
+    /**
+     * 获取订单
+     */
+    public OrderInfo selectOrderById(long orderId) {
+        return orderDao.selectOrderById(orderId);
+    }
 }

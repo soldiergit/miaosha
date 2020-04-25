@@ -150,6 +150,7 @@
                 clearTimeout(timeout);
             }
             $("#miaoshaTip").html("秒杀进行中");
+            // 生成验证码
             $("#verifyCodeImg").attr("src", "/miaosha/verifyCode?goodsId=" + $("#goodsId").val());
             $("#verifyCodeImg").show();
             $("#verifyCode").show();
@@ -163,14 +164,16 @@
 
     // 切换验证码
     function refreshVerifyCode() {
+        // 多插入timestamp参数是防止浏览器缓存，因为我们的图片是通过response的OutputStream生成的
         $("#verifyCodeImg").attr("src", "/miaosha/verifyCode?goodsId=" + $("#goodsId").val() + "&timestamp=" + new Date().getTime());
     }
 
+    // 校验图片验证码并获取秒杀地址
     function getMiaoshaPath() {
         var goodsId = $("#goodsId").val();
         g_showLoading();
         $.ajax({
-            url: "/miaosha/path",
+            url: "/miaosha/getPath",
             type: "GET",
             data: {
                 goodsId: goodsId,
@@ -179,6 +182,7 @@
             success: function (data) {
                 if (data.code == 0) {
                     var path = data.data;
+                    // 执行秒杀
                     doMiaosha(path);
                 } else {
                     layer.msg(data.msg);
@@ -223,7 +227,7 @@
             url: "/miaosha/result",
             type: "GET",
             data: {
-                goodsId: $("#goodsId").val()
+                goodsId: goodsId
             },
             success: function (data) {
                 if (data.code == 0) {

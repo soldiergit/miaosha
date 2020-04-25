@@ -30,4 +30,9 @@
         insert into miaosha_order (user_id, goods_id, order_id)
         values(#{userId}, #{goodsId}, #{orderId})
     </insert>
+
+    <select id="selectOrderById" resultType="com.soldier.domain.OrderInfo">
+        select * from order_info
+        where id = #{orderId}
+    </select>
 </mapper>

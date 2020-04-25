@@ -1,5 +1,6 @@
 package com.soldier.controller;
 
+import com.soldier.access.AccessLimit;
 import com.soldier.domain.MiaoshaOrder;
 import com.soldier.domain.MiaoshaUser;
 import com.soldier.domain.OrderInfo;
@@ -14,10 +15,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -106,13 +104,22 @@ public class MIaoshaController implements InitializingBean {
 
     /**
      * 使用rabbitmq优化接口
+     * 安全优化 接口地址隐藏
      */
-    @RequestMapping(value = "/do_miaosha", method = RequestMethod.POST)
+    @RequestMapping(value = "/{path}/do_miaosha", method = RequestMethod.POST)
     @ResponseBody
-    public Result<Integer> miaosha(@RequestParam("goodsId") Long goodsId, MiaoshaUser miaoshaUser, Model model) {
+    public Result<Integer> miaosha(@RequestParam("goodsId") Long goodsId,
+                                   @PathVariable("path") String path,
+                                   MiaoshaUser miaoshaUser, Model model) {
 
         if (miaoshaUser == null) {
             return Result.error(CodeMsg.SESSION_ERROR);
+        }
+
+        //验证path
+        boolean check = miaoshaService.checkPath(miaoshaUser, goodsId, path);
+        if(!check){
+            return Result.error(CodeMsg.REQUEST_ILLEGAL);
         }
 
         //商品库存标记 减少redis访问
@@ -164,42 +171,56 @@ public class MIaoshaController implements InitializingBean {
         return Result.success(result);
     }
 
-//    @AccessLimit(seconds = 5, maxCount = 5, needLogin = true)
-//    @RequestMapping(value = "/path", method = RequestMethod.GET)
-//    @ResponseBody
-//    public Result<String> getMiaoshaPath(HttpServletRequest request, MiaoshaUser user,
-//                                         @RequestParam("goodsId") long goodsId,
-//                                         @RequestParam(value = "verifyCode", defaultValue = "0") int verifyCode
-//    ) {
-//        if (user == null) {
-//            return Result.error(CodeMsg.SESSION_ERROR);
-//        }
-//        boolean check = miaoshaService.checkVerifyCode(user, goodsId, verifyCode);
-//        if (!check) {
-//            return Result.error(CodeMsg.REQUEST_ILLEGAL);
-//        }
-//        String path = miaoshaService.createMiaoshaPath(user, goodsId);
-//        return Result.success(path);
-//    }
-//
-//
-//    @RequestMapping(value = "/verifyCode", method = RequestMethod.GET)
-//    @ResponseBody
-//    public Result<String> getMiaoshaVerifyCod(HttpServletResponse response, MiaoshaUser user,
-//                                              @RequestParam("goodsId") long goodsId) {
-//        if (user == null) {
-//            return Result.error(CodeMsg.SESSION_ERROR);
-//        }
-//        try {
-//            BufferedImage image = miaoshaService.createVerifyCode(user, goodsId);
-//            OutputStream out = response.getOutputStream();
-//            ImageIO.write(image, "JPEG", out);
-//            out.flush();
-//            out.close();
-//            return null;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return Result.error(CodeMsg.MIAOSHA_FAIL);
-//        }
-//    }
+    /**
+     * 校验图片验证码并获取秒杀地址
+     * AccessLimit 接口的限流防刷
+     */
+    @AccessLimit(seconds = 5, maxCount = 5, needLogin = true)
+    @RequestMapping(value = "/getPath", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<String> getMiaoshaPath(HttpServletRequest request, MiaoshaUser user,
+                                         @RequestParam("goodsId") long goodsId,
+                                         @RequestParam(value = "verifyCode", defaultValue = "0") int verifyCode
+    ) {
+        if (user == null) {
+            return Result.error(CodeMsg.SESSION_ERROR);
+        }
+        // 校验 验证码
+        boolean check = miaoshaService.checkVerifyCode(user, goodsId, verifyCode);
+        if (!check) {
+            return Result.error(CodeMsg.VERIFY_CODE_ERROR);
+        }
+        String path = miaoshaService.createMiaoshaPath(user, goodsId);
+        return Result.success(path);
+    }
+
+    /**
+     * 生成验证码
+     * @param response
+     * @param user
+     * @param goodsId
+     * @return 什么都不用返回，因为这样子已经通过response的OutputStream返回出去了
+     */
+    @RequestMapping(value = "/verifyCode", method = RequestMethod.GET)
+    @ResponseBody
+    public Result<String> getMiaoshaVerifyCod(HttpServletResponse response, MiaoshaUser user,
+                                              @RequestParam("goodsId") long goodsId) {
+        if (user == null) {
+            return Result.error(CodeMsg.SESSION_ERROR);
+        }
+        try {
+            // 生成图片验证码
+            BufferedImage image = miaoshaService.createVerifyCode(user, goodsId);
+            // 获取输出流
+            OutputStream out = response.getOutputStream();
+            // 往客户端写入图片
+            ImageIO.write(image, "JPEG", out);
+            out.flush();
+            out.close();
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error(CodeMsg.GET_VERIFY_CODE);
+        }
+    }
 }

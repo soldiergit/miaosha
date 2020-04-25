@@ -23,4 +23,6 @@ public interface OrderDao {
     void insert(OrderInfo orderInfo);
 
     void insertMiaoshaOrder(MiaoshaOrder miaoshaOrder);
+
+    OrderInfo selectOrderById(long orderId);
 }

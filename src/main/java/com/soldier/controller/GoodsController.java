@@ -1,8 +1,7 @@
 package com.soldier.controller;
 
-import com.soldier.domain.GoodsDetailVo;
+import com.soldier.vo.GoodsDetailVo;
 import com.soldier.domain.MiaoshaUser;
-import com.soldier.domain.User;
 import com.soldier.redis.prefix.GoodsHtmlKey;
 import com.soldier.result.CodeMsg;
 import com.soldier.result.Result;

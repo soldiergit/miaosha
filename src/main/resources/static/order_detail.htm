@@ -74,6 +74,7 @@
 </body>
 </html>
 <script>
+    // 显示数据
     function render(detail) {
         var goodsVo = detail.goodsVo;
         var orderInfo = detail.orderInfo;
@@ -82,9 +83,9 @@
         $("#orderPrice").text(orderInfo.goodsPrice);
         $("#createDate").text(new Date(orderInfo.createDate).format("yyyy-MM-dd hh:mm:ss"));
         var status = "";
-        if (order.status == 0) {
+        if (orderInfo.status == 0) {
             status = "未支付"
-        } else if (order.status == 1) {
+        } else if (orderInfo.status == 1) {
             status = "待发货";
         }
         $("#orderStatus").text(status);

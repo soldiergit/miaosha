@@ -30,7 +30,7 @@ Java秒杀系统方案优化-高性能高并发实战
 >1. 服务端：PASS = MD5（用户输入，即前段传回来的PASS + 随机alt）
 >2. 之后再保存到后台数据库
 
-## 分布式Session
+## `分布式Session`
 #### 第一步：用户登录
 >1. 通过用户输入的账号密码查询到用户信息
 >2. 生成token作为key，将用户信息持久化到redis
@@ -42,7 +42,7 @@ Java秒杀系统方案优化-高性能高并发实战
 >4. 在controller上把用户类作为参数传入,webMvc会自动通过参数解析器来填充用户信息
 >5. 如果用户信息不为null，则允许用户继续访问页面；否则返回登录页面
 
-## 页面优化
+## `页面优化`
 ###　页面缓存＋URL缓存＋对象缓存
 #### 页面缓存
 >1. 注入thymeleaf视图解析器和上下文对象(ThymeleafViewResolver+ApplicationContext)
@@ -65,7 +65,7 @@ Java秒杀系统方案优化-高性能高并发实战
 ### CDN优化
 >- CDN就近访问，[点击前往](https://baike.baidu.com/item/CDN/420951?fr=aladdin)
 
-## RabbitMQ的安装与配置
+## `RabbitMQ的安装与配置`
 #### RabbitMQ的安装
 1. 下载[Erlang](https://www.rabbitmq.com/releases/erlang/)<br>
 2. 下载[RabbitMQ](https://www.rabbitmq.com/releases/rabbitmq-server/)<br>
@@ -96,7 +96,7 @@ cd /usr/lib/rabbitmq/bin
 #### RabbitMQ的配置
 [SpringBoot + RabbitMQ配置参数解释](https://www.cnblogs.com/qts-hope/p/11242559.html)
 
-## 秒杀接口的优化
+## `秒杀接口的优化`
 ```C
 思路：减少数据库访问
 ```
@@ -107,9 +107,37 @@ cd /usr/lib/rabbitmq/bin
 >5. 客户端轮询，是否秒杀成功
 ```C
 总结：
-其实简单来时，就是用户点击秒杀时，将消息发送到消息中间件中的某个队列里
+其实简单来说，就是用户点击秒杀时，将消息发送到消息中间件中的某个队列里
 然后直接返回一个标识，表示排队中
 消息消费者使用RabbitListener监听这个队列，当消息到达时消费这个消息，调用接口进行业务操作
 当客户端收到服务端返回的标识后，再发送一个请求到服务端判断订单状态
 注意轮询的时间，不能太快也不能太慢
+```
+
+## `安全优化`
+### 接口地址隐藏
+>1. 接口改造，带上PathVariable参数
+>2. 添加生成的地址的接口
+>3. 秒杀收到请求，先验证PathVariable
+### 数学格式验证码
+ScriptEngine的使用
+```C
+总结：
+其实简单来说，就是在controller层调用接口，后台自动随机生成一个数学表达式
+然后将表达式写入BufferedImage对象中
+通过ScriptEngine计算出这个数学表达式的值，并保存到redis中
+再通过ImageIO接口将HttpServletResponse的OutputStream对象和BufferedImage以图片格式写出到img标签的src下
+当用户提交的验证码的值与redis中的匹配时，删除redis中的记录，并继续执行业务代码
+否则返回错误信息
+```
+### 接口的限流防刷
+自定义AccessLimit注解，可以使用拦截器减少对业务的侵入
+```C
+总结：
+AccessLimit参数解释：seconds-多少秒内    maxCount-允许访问多少次接口  needLogin-是否需要登录
+其实简单来说，就是为AccessLimit注解添加一个拦截器
+将用户id和接口URL作为key 将访问次数作为value，保存到redis中
+如果是第一次访问，就往redis中插入一条数据，value为1，过期时间为seconds参数
+如果不是第一次访问，且未超过maxCount限制，就将value自增1
+如果seconds秒内超过了maxCount限制，就返回false并通过HttpServletResponse的OutputStream对象将错误信息写出去
 ```

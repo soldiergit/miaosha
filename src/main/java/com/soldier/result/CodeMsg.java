@@ -21,7 +21,9 @@ public class CodeMsg {
     public static CodeMsg BIND_ERROR = new CodeMsg(500101, "参数校验异常：%s");
     // 请求异常
     public static CodeMsg REQUEST_ILLEGAL = new CodeMsg(500102, "请求非法");
-    public static CodeMsg ACCESS_LIMIT_REACHED = new CodeMsg(500104, "访问太频繁！");
+    public static CodeMsg GET_VERIFY_CODE = new CodeMsg(500103, "获取验证码失败！");
+    public static CodeMsg VERIFY_CODE_ERROR = new CodeMsg(500104, "验证码错误，请重新输入！");
+    public static CodeMsg ACCESS_LIMIT_REACHED = new CodeMsg(500105, "访问太频繁！");
     //登录模块 5002XX
     public static CodeMsg SESSION_ERROR = new CodeMsg(500210, "Session不存在或者已经失效,请重新登录！");
     public static CodeMsg PASSWORD_EMPTY = new CodeMsg(500211, "登录密码不能为空");

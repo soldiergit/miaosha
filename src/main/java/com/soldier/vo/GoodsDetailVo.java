@@ -1,5 +1,6 @@
-package com.soldier.domain;
+package com.soldier.vo;
 
+import com.soldier.domain.MiaoshaUser;
 import com.soldier.vo.GoodsVo;
 
 /**
