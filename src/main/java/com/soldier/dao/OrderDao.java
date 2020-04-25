@@ -19,7 +19,8 @@ public interface OrderDao {
             @Param("goodsId") Long goodsId);
 
 //    @SelectKey(keyColumn="id", keyProperty="id", resultType=long.class, before=false, statement="select last_insert_id()")
-    public long insert(OrderInfo orderInfo);
+    //SelectKey返回的id会放到对象里
+    void insert(OrderInfo orderInfo);
 
     void insertMiaoshaOrder(MiaoshaOrder miaoshaOrder);
 }

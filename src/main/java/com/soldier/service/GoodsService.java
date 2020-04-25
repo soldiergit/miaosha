@@ -30,9 +30,10 @@ public class GoodsService {
     }
 
     // 减少秒杀商品库存
-    public void reduceMiaoshaGoodsStock(GoodsVo goodsVo) {
+    public boolean reduceMiaoshaGoodsStock(GoodsVo goodsVo) {
         MiaoshaGoods miaoshaGoods = new MiaoshaGoods();
         miaoshaGoods.setGoodsId(goodsVo.getId());
-        goodsDao.reduceMiaoshaGoodsStock(miaoshaGoods);
+        int ret = goodsDao.reduceMiaoshaGoodsStock(miaoshaGoods);
+        return ret>0;
     }
 }

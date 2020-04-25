@@ -25,63 +25,71 @@ public class MQSender {
     private AmqpTemplate amqpTemplate;
 
     /**
-     * Direct模式
-     * 发送消息时只需要指定Queue队列名称，和消息
+     * 请求入队(消息队列)，立即返回信息：“排队中”
      */
-    public void sendDirect(Object message) {
-
-        String msg = JsonUtil.beanToStr(message);
-
-        logger.info("send direct message:"+msg);
-
-        amqpTemplate.convertAndSend(MQConfig.QUEUE_NAME, msg);
+    public void sendMiaoshaMessage(MiaoshaMessage miaoshaMessage) {
+        String message = JsonUtil.beanToStr(miaoshaMessage);
+        logger.info("send message "+message);
+        amqpTemplate.convertAndSend(MQConfig.MIAOSHA_QUEUE, message);
     }
 
-    /**
-     * Topic模式
-     * 发送消息时需要指定交换器Exchange，routingKey，和消息
-     */
-    public void sendTopic(Object message) {
-
-        String msg = JsonUtil.beanToStr(message);
-
-        logger.info("send topic message:"+msg);
-
-        //匹配得上routingKey=topic.key2
-        amqpTemplate.convertAndSend(MQConfig.TOPIC_EXCHANGE, "topic.key2", msg+"1");
-        //使用通配符=topic.#
-        amqpTemplate.convertAndSend(MQConfig.TOPIC_EXCHANGE, "topic.key2", msg+"2");
-    }
-
-    /**
-     * Fanout模式
-     * 发送消息时需要指定交换器Exchange，空的routingKey，消息
-     */
-    public void sendFanout(Object message) {
-
-        String msg = JsonUtil.beanToStr(message);
-
-        logger.info("send fanout message:"+msg);
-
-        amqpTemplate.convertAndSend(MQConfig.FANOUT_EXCHANGE, "", msg+"1");
-    }
-
-    /**
-     * Headers模式
-     * 发送消息时需要指定交换器Exchange，空的routingKey，Message对象
-     */
-    public void sendHeaders(Object message) {
-
-        String msg = JsonUtil.beanToStr(message);
-
-        logger.info("send headers message:"+msg);
-
-        MessageProperties messageProperties = new MessageProperties();
-        //必须与MQConfig中指定的map的key-value一样
-        messageProperties.setHeader("header1", "value1");
-        messageProperties.setHeader("header2", "value2");
-        Message obj = new Message(msg.getBytes(), messageProperties);
-        amqpTemplate.convertAndSend(MQConfig.HEADERS_EXCHANGE, "", obj);
-    }
-
+//    *
+//     * Direct模式
+//     * 发送消息时只需要指定Queue队列名称，和消息
+//
+//    public void sendDirect(Object message) {
+//
+//        String msg = JsonUtil.beanToStr(message);
+//
+//        logger.info("send direct message:"+msg);
+//
+//        amqpTemplate.convertAndSend(MQConfig.QUEUE_NAME, msg);
+//    }
+//
+//    *
+//     * Topic模式
+//     * 发送消息时需要指定交换器Exchange，routingKey，和消息
+//
+//    public void sendTopic(Object message) {
+//
+//        String msg = JsonUtil.beanToStr(message);
+//
+//        logger.info("send topic message:"+msg);
+//
+//        //匹配得上routingKey=topic.key2
+//        amqpTemplate.convertAndSend(MQConfig.TOPIC_EXCHANGE, "topic.key2", msg+"1");
+//        //使用通配符=topic.#
+//        amqpTemplate.convertAndSend(MQConfig.TOPIC_EXCHANGE, "topic.key2", msg+"2");
+//    }
+//
+//    *
+//     * Fanout模式
+//     * 发送消息时需要指定交换器Exchange，空的routingKey，消息
+//
+//    public void sendFanout(Object message) {
+//
+//        String msg = JsonUtil.beanToStr(message);
+//
+//        logger.info("send fanout message:"+msg);
+//
+//        amqpTemplate.convertAndSend(MQConfig.FANOUT_EXCHANGE, "", msg+"1");
+//    }
+//
+//    *
+//     * Headers模式
+//     * 发送消息时需要指定交换器Exchange，空的routingKey，Message对象
+//
+//    public void sendHeaders(Object message) {
+//
+//        String msg = JsonUtil.beanToStr(message);
+//
+//        logger.info("send headers message:"+msg);
+//
+//        MessageProperties messageProperties = new MessageProperties();
+//        //必须与MQConfig中指定的map的key-value一样
+//        messageProperties.setHeader("header1", "value1");
+//        messageProperties.setHeader("header2", "value2");
+//        Message obj = new Message(msg.getBytes(), messageProperties);
+//        amqpTemplate.convertAndSend(MQConfig.HEADERS_EXCHANGE, "", obj);
+//    }
 }

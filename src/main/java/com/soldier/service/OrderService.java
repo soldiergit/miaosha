@@ -46,12 +46,13 @@ public class OrderService {
         orderInfo.setOrderChannel(1);
         orderInfo.setStatus(0);
         orderInfo.setUserId(miaoshaUser.getId());
-        long orderId = orderDao.insert(orderInfo);
+        //SelectKey返回的id会放到对象里
+        orderDao.insert(orderInfo);
 
         //秒杀订单
         MiaoshaOrder miaoshaOrder = new MiaoshaOrder();
         miaoshaOrder.setGoodsId(goodsVo.getId());
-        miaoshaOrder.setOrderId(orderId);
+        miaoshaOrder.setOrderId(orderInfo.getId());
         miaoshaOrder.setUserId(miaoshaUser.getId());
         orderDao.insertMiaoshaOrder(miaoshaOrder);
 

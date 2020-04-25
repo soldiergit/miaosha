@@ -1,8 +1,11 @@
 package com.soldier.controller;
 
+import com.soldier.domain.GoodsDetailVo;
 import com.soldier.domain.MiaoshaUser;
 import com.soldier.domain.User;
 import com.soldier.redis.prefix.GoodsHtmlKey;
+import com.soldier.result.CodeMsg;
+import com.soldier.result.Result;
 import com.soldier.service.GoodsService;
 import com.soldier.service.MiaoshaUserService;
 import com.soldier.service.RedisService;
@@ -100,14 +103,15 @@ public class GoodsController {
     /**
      * 实现页面缓存
      * 因为我们专门webmvc配置了针对秒杀用户的参数解析器
-     *  然后我们从WebMvcConfig中定义的参数解析器中获取用户信息
-     * @param miaoshaUser   秒杀用户信息
-     * @param model         模型
+     * 然后我们从WebMvcConfig中定义的参数解析器中获取用户信息
+     *
+     * @param miaoshaUser 秒杀用户信息
+     * @param model       模型
      */
     @RequestMapping(value = "/to_list", produces = "text/html; charset=UTF-8")
     @ResponseBody
     public String list(MiaoshaUser miaoshaUser, Model model,
-                       HttpServletRequest request, HttpServletResponse response){
+                       HttpServletRequest request, HttpServletResponse response) {
 
         if (miaoshaUser == null) {
             return "login";
@@ -145,9 +149,11 @@ public class GoodsController {
         return html;
     }
 
-    /*弃用，使用URL路径缓存
+    /**
+     * 弃用，使用URL路径缓存
+     */
     @RequestMapping("/to_detail/{goodsId}")
-    public String detail(@PathVariable("goodsId") Long goodsId, MiaoshaUser miaoshaUser, Model model){
+    public String detail(@PathVariable("goodsId") Long goodsId, MiaoshaUser miaoshaUser, Model model) {
 
         if (miaoshaUser == null) {
             return "login";
@@ -168,7 +174,7 @@ public class GoodsController {
 
         if (now < startTime) {//秒杀未开始，倒计时
             miaoshaStatus = 0;
-            remainSeconds = (int) ((startTime - now)/1000);
+            remainSeconds = (int) ((startTime - now) / 1000);
         } else if (now > endTime) {//秒杀已结束
             miaoshaStatus = 2;
             remainSeconds = -1;
@@ -183,22 +189,22 @@ public class GoodsController {
         model.addAttribute("remainSeconds", remainSeconds);
 
         return "goods_detail";
-    }*/
+    }
 
     /**
-     * 使用URL路径缓存
+     * 弃用URL路径缓存，使用伪页面静态化，实现前后端分离
      */
-    @RequestMapping(value = "/to_detail/{goodsId}", produces = "text/html; charset=UTF-8")
+    @RequestMapping(value = "/detail2/{goodsId}", produces = "text/html; charset=UTF-8")
     @ResponseBody
-    public String detail(@PathVariable("goodsId") Long goodsId, MiaoshaUser miaoshaUser, Model model,
-                         HttpServletRequest request, HttpServletResponse response){
+    public String detail2(@PathVariable("goodsId") Long goodsId, MiaoshaUser miaoshaUser, Model model,
+                          HttpServletRequest request, HttpServletResponse response) {
 
         if (miaoshaUser == null) {
             return "login";
         }
 
         // 取URL路径缓存
-        String html = redisService.get(GoodsHtmlKey.getGoodsDetail, ""+goodsId, String.class);
+        String html = redisService.get(GoodsHtmlKey.getGoodsDetail, "" + goodsId, String.class);
         if (!StringUtils.isEmpty(html)) {
             return html;
         }
@@ -219,7 +225,7 @@ public class GoodsController {
         int remainSeconds = 0;
         if (now < startTime) {//秒杀未开始，倒计时
             miaoshaStatus = 0;
-            remainSeconds = (int) ((startTime - now)/1000);
+            remainSeconds = (int) ((startTime - now) / 1000);
         } else if (now > endTime) {//秒杀已结束
             miaoshaStatus = 2;
             remainSeconds = -1;
@@ -244,8 +250,49 @@ public class GoodsController {
 
         // 写入URL路径缓存
         if (!StringUtils.isEmpty(html)) {
-            redisService.set(GoodsHtmlKey.getGoodsDetail, ""+goodsId, html);
+            redisService.set(GoodsHtmlKey.getGoodsDetail, "" + goodsId, html);
         }
         return html;
+    }
+
+    /**
+     * 使用伪页面静态化，实现前后端分离
+     */
+    @RequestMapping("/detail/{goodsId}")
+    @ResponseBody
+    public Result<GoodsDetailVo> detail(@PathVariable("goodsId") Long goodsId, MiaoshaUser miaoshaUser) {
+
+        if (miaoshaUser == null) {
+            return Result.error(CodeMsg.SESSION_ERROR);
+        }
+
+        GoodsVo goodsVo = goodsService.selectGoodsVoByGoodsId(goodsId);
+        // 秒杀开始时间
+        long startTime = goodsVo.getStartDate().getTime();
+        // 秒杀结束时间时间
+        long endTime = goodsVo.getEndDate().getTime();
+        // 系统当前
+        long now = System.currentTimeMillis();
+        // 秒杀状态 0-倒计时 1-进行中 2-已结束
+        int miaoshaStatus = 0;
+        // 距离活动开始剩余时间
+        int remainSeconds = 0;
+        if (now < startTime) {//秒杀未开始，倒计时
+            miaoshaStatus = 0;
+            remainSeconds = (int) ((startTime - now) / 1000);
+        } else if (now > endTime) {//秒杀已结束
+            miaoshaStatus = 2;
+            remainSeconds = -1;
+        } else {//秒杀进行中
+            miaoshaStatus = 1;
+            remainSeconds = 0;
+        }
+
+        GoodsDetailVo vo = new GoodsDetailVo();
+        vo.setGoodsVo(goodsVo);
+        vo.setMiaoshaUser(miaoshaUser);
+        vo.setRemainSeconds(remainSeconds);
+        vo.setMiaoshaStatus(miaoshaStatus);
+        return Result.success(vo);
     }
 }

@@ -28,5 +28,5 @@ public interface GoodsDao {
     void reduceGoodsStock(Goods goods);
 
     // 减少秒杀商品库存
-    void reduceMiaoshaGoodsStock(MiaoshaGoods miaoshaGoods);
+    int reduceMiaoshaGoodsStock(MiaoshaGoods miaoshaGoods);
 }

@@ -68,43 +68,43 @@ public class DemoController {
         return Result.success(set);
     }
 
-    /**
-     * Direct模式
-     */
-    @RequestMapping("/rabbitmq")
-    @ResponseBody
-    public Result<String> mqDirectSend() {
-        mqSender.sendDirect("hello, world!");
-        return Result.success("hello, world!");
-    }
-
-    /**
-     * Topic模式
-     */
-    @RequestMapping("/rabbitmq/topic")
-    @ResponseBody
-    public Result<String> mqTopicSend() {
-        mqSender.sendTopic("hello topic queue");
-        return Result.success("hello topic queue");
-    }
-
-    /**
-     * Fanout模式
-     */
-    @RequestMapping("/rabbitmq/fanout")
-    @ResponseBody
-    public Result<String> mqFanoutSend() {
-        mqSender.sendFanout("hello fanout queue");
-        return Result.success("hello fanout queue");
-    }
-
-    /**
-     * Headers模式
-     */
-    @RequestMapping("/rabbitmq/headers")
-    @ResponseBody
-    public Result<String> mqHeadersSend() {
-        mqSender.sendHeaders("hello headers queue");
-        return Result.success("hello headers queue");
-    }
+//    /**
+//     * Direct模式
+//     */
+//    @RequestMapping("/rabbitmq")
+//    @ResponseBody
+//    public Result<String> mqDirectSend() {
+//        mqSender.sendDirect("hello, world!");
+//        return Result.success("hello, world!");
+//    }
+//
+//    /**
+//     * Topic模式
+//     */
+//    @RequestMapping("/rabbitmq/topic")
+//    @ResponseBody
+//    public Result<String> mqTopicSend() {
+//        mqSender.sendTopic("hello topic queue");
+//        return Result.success("hello topic queue");
+//    }
+//
+//    /**
+//     * Fanout模式
+//     */
+//    @RequestMapping("/rabbitmq/fanout")
+//    @ResponseBody
+//    public Result<String> mqFanoutSend() {
+//        mqSender.sendFanout("hello fanout queue");
+//        return Result.success("hello fanout queue");
+//    }
+//
+//    /**
+//     * Headers模式
+//     */
+//    @RequestMapping("/rabbitmq/headers")
+//    @ResponseBody
+//    public Result<String> mqHeadersSend() {
+//        mqSender.sendHeaders("hello headers queue");
+//        return Result.success("hello headers queue");
+//    }
 }

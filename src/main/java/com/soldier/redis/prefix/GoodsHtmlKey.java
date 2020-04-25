@@ -21,4 +21,7 @@ public class GoodsHtmlKey extends BasePrefix {
 
     // 创建一个GoodsHtmlKey：过期时间为60秒， 前缀为className+prefix=GoodsHtmlKey:gd
     public static GoodsHtmlKey getGoodsDetail = new GoodsHtmlKey(60, "gd");
+
+    // 创建一个GoodsHtmlKey：永不过期， 前缀为className+prefix=GoodsHtmlKey:mgs
+    public static GoodsHtmlKey getMiaoshaGoodsStock = new GoodsHtmlKey(0, "mgs");
 }

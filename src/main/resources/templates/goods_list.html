@@ -36,7 +36,9 @@
             <td th:text="${goodsVo.goodsPrice}"></td>
             <td th:text="${goodsVo.miaoshaPrice}"></td>
             <td th:text="${goodsVo.stockCount}"></td>
-            <td><a th:href="'/goods/to_detail/'+${goodsVo.id}">详情</a></td>
+            <!--<td><a th:href="'/goods/detail/'+${goodsVo.id}">详情</a></td>-->
+            <!--使用伪页面静态化，实现前后端分离-->
+            <td><a th:href="'/goods_detail.htm?goodsId='+${goodsVo.id}">详情</a></td>
         </tr>
     </table>
 </div>

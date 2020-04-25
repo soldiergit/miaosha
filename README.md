@@ -7,7 +7,7 @@ Java秒杀系统方案优化-高性能高并发实战
 
 ## redis的安装与配置
 #### redis的安装
->1. 到![redis官网](https://redis.io/ "redis官网")下载redis压缩包
+>1. 到[redis官网](https://redis.io/)下载redis压缩包
 >2. tar -zxvf redis-5.0.8.tar.gz
 >3. mv redis-5.0.8 /usr/local/redis
 >4. cd /usr/local/redis
@@ -53,43 +53,63 @@ Java秒杀系统方案优化-高性能高并发实战
 >1. 其实与页面缓存和页面缓存差不多
 >2. 对象缓存不会设置失效时间
 >3. 但是对象更新时，要更新缓存
->4. 详情查看：![点击前往](https://blog.csdn.net/tTU1EvLDeLFq5btqiK/article/details/78693323]
+>4. 详情查看：[点击前往](https://blog.csdn.net/tTU1EvLDeLFq5btqiK/article/details/78693323)
 ### 页面静态化，前后端分离
+咱们这里模拟，请求static下的静态页面，在该页面通过ajax发送请求来渲染页面数据<br>
 `
 如：AngularJS、Vue.js，利用浏览器缓存
 `
 >1. css/js压缩，减少流量
->2. 可学习Tengine，![点击前往](https://tengine.taobao.org "Tengine")
->3. webpack:专门为打包用的，![点击前往](https://webpack.js.org/guides/getting-started/ "webpack")
+>2. 可学习Tengine，[点击前往](https://tengine.taobao.org)
+>3. webpack:专门为打包用的，[点击前往](https://webpack.js.org/guides/getting-started/)
 ### CDN优化
->- CDN就近访问，![点击前往](https://baike.baidu.com/item/CDN/420951?fr=aladdin "CDN百度百科")
+>- CDN就近访问，[点击前往](https://baike.baidu.com/item/CDN/420951?fr=aladdin)
 
 ## RabbitMQ的安装与配置
 #### RabbitMQ的安装
->1. 下载![Erlang](https://www.rabbitmq.com/releases/erlang/ "Erlang下载地址")
->2. 下载![RabbitMQ](https://www.rabbitmq.com/releases/rabbitmq-server/ "RabbitMQ下载地址")
->3. 根据系统版本下载![socat](http://repo.iotti.biz/CentOS/ "rabbitmq安装依赖于socat")
-`
+1. 下载[Erlang](https://www.rabbitmq.com/releases/erlang/)<br>
+2. 下载[RabbitMQ](https://www.rabbitmq.com/releases/rabbitmq-server/)<br>
+3. 根据系统版本下载[socat](http://repo.iotti.biz/CentOS/)<br>
+```C
 查看系统版本信息：lsb_release -a
-`
->4. 分别安装Erlang、Socat、RabbitMQ（一定按照顺序！）
-`
+```
+4. 分别安装Erlang、Socat、RabbitMQ（一定按照顺序！）<br>
+```C
 wget https://www.rabbitmq.com/releases/erlang/erlang-19.0.4-1.el7.centos.x86_64.rpm
 wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.15/rabbitmq-server-3.6.15-1.el6.noarch.rpm
 wget http://repo.iotti.biz/CentOS/7/x86_64/socat-1.7.3.2-5.el7.lux.x86_64.rpm
 rpm -ivh erlang-19.0.4-1.el7.centos.x86_64.rpm
 rpm -ivh socat-1.7.3.2-5.el7.lux.x86_64.rpm
 rpm -ivh rabbitmq-server-3.6.15-1.el6.noarch.rpm
-`
->5. 配置rabbitmq：vi /usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/ebin/rabbit.app
-`
+```
+5. 配置rabbitmq<br>
+```C
+vi /usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/ebin/rabbit.app
 将 {loopback_users, [<<"guest">>]} 改为 {loopback_users, []}
-`
->6. 安装管理插件：rabbitmq-plugins enable rabbitmq_management
->7. 启动RabbitMQ，然后访问http://116.62.48.112:15672/#/，默认用户名密码：guest
-`
+```
+6. 安装管理插件：rabbitmq-plugins enable rabbitmq_management<br>
+7. 启动RabbitMQ，然后访问IP:5672/，默认用户名密码：guest即可查看<br>
+```C
 cd /usr/lib/rabbitmq/bin
 ./rabbitmq-server start
+```
+#### RabbitMQ的配置
+[SpringBoot + RabbitMQ配置参数解释](https://www.cnblogs.com/qts-hope/p/11242559.html)
 
-`
-![Spring Boot + RabbitMQ 配置参数解释](https://www.cnblogs.com/qts-hope/p/11242559.html "Spring Boot + RabbitMQ 配置参数解释")
+## 秒杀接口的优化
+```C
+思路：减少数据库访问
+```
+>1. 系统初始化时，把商品库存数量加载到redis
+>2. 收到请求时，redis预减库存，库存不足，直接返回，否则进入第三步
+>3. 请求入队(消息队列)，立即返回信息：“排队中”
+>4. 请求出队，生产订单，减少库存
+>5. 客户端轮询，是否秒杀成功
+```C
+总结：
+其实简单来时，就是用户点击秒杀时，将消息发送到消息中间件中的某个队列里
+然后直接返回一个标识，表示排队中
+消息消费者使用RabbitListener监听这个队列，当消息到达时消费这个消息，调用接口进行业务操作
+当客户端收到服务端返回的标识后，再发送一个请求到服务端判断订单状态
+注意轮询的时间，不能太快也不能太慢
+```
