@@ -1,11 +1,11 @@
 Java秒杀系统方案优化-高性能高并发实战
 ================================================
 
-## mybatis
+## `mybatis`
 #### dao指定方法
 #### mapper配置文件指定id为方法名字
 
-## redis的安装与配置
+## `redis的安装与配置`
 #### redis的安装
 >1. 到[redis官网](https://redis.io/)下载redis压缩包
 >2. tar -zxvf redis-5.0.8.tar.gz
@@ -23,7 +23,7 @@ Java秒杀系统方案优化-高性能高并发实战
 >4. 查看这个服务的配置：vi /etc/rc.d/init.d/redis_6379
 >3. 关闭/重启：systemctl stop/start redis_6379
 
-## 两次MD5
+## `两次MD5`
 #### 第一次MD5
 >用户端：PASS = MD5（明文 + 固定salt）
 #### 第二次MD5
@@ -119,6 +119,13 @@ cd /usr/lib/rabbitmq/bin
 >1. 接口改造，带上PathVariable参数
 >2. 添加生成的地址的接口
 >3. 秒杀收到请求，先验证PathVariable
+```C
+总结：
+其实简单来说，就是在执行主业务代码前先请求一次后台，随机生成一个字符串，保存到redis中并返回客户端
+当客户端请求成功后，才真正请求主业务代码接口，并将这个path串带上
+主业务代码接口读取redis校验这个path串，匹配成功才执行主业务代码
+否则返回错误信息，有效方式他人恶意调用主业务代码
+```
 ### 数学格式验证码
 ScriptEngine的使用
 ```C
